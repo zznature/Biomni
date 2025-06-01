@@ -12,15 +12,8 @@ Biomni employs an action discovery agent to systematically mine essential tools,
 
 Built on this foundation, Biomni features a generalist agentic architecture (Biomni-A1) that integrates LLM reasoning with retrieval-augmented planning and code-based execution, enabling complex biomedical workflows. Unlike traditional solutions that rely on pre-defined templates, Biomni can dynamically compose and execute research tasks across a wide range of biomedical subfields, such as gene prioritization, drug repurposing, rare disease diagnosis, microbiome analysis, and molecular cloning, all without task-specific tuning.
 
-### Note: We are working hard to prepare for the full open source release. Stay tuned! In the meantime, use [**biomni.stanford.edu**](https://biomni.stanford.edu) to try it out!
+## Note: We are working hard to prepare for the full open source release. Stay tuned! In the meantime, use [**biomni.stanford.edu**](https://biomni.stanford.edu) to try it out!
 
-### How to use Biomni?
-
-```python
-from biomni import biomni_agent
-agent = biomni_agent(path = './data', llm = 'claude-3-7-sonnet-latest')
-agent.go("YOUR TASK")
-```
 
 ### Sign up for UI access
 
