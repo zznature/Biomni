@@ -32,7 +32,7 @@ Biomni is a general-purpose biomedical AI agent designed to autonomously execute
 
 ### Installation
 
-Our software environment is massive and we provide a single setup.sh script to setup. 
+Our software environment is massive and we provide a single setup.sh script to setup.
 Follow this [file](biomni_env/README.md) to setup the env first.
 
 Then activate the environment E1:
@@ -77,7 +77,7 @@ agent.go("Predict ADMET properties for this compound: CC(C)CC1=CC=C(C=C1)C(C)C(=
 Biomni is an open-science initiative that thrives on community contributions. We welcome:
 
 - **🔧 New Tools**: Specialized analysis functions and algorithms
-- **📊 Datasets**: Curated biomedical data and knowledge bases  
+- **📊 Datasets**: Curated biomedical data and knowledge bases
 - **💻 Software**: Integration of existing biomedical software packages
 - **📋 Benchmarks**: Evaluation datasets and performance metrics
 - **📚 Misc**: Tutorials, examples, and use cases
@@ -89,7 +89,7 @@ If you have particular tool/database/software in mind that you want to add, you 
 
 ## 🔬 Call for Contributors: Help Build Biomni-E2
 
-Biomni-E1 only scratches the surface of what’s possible in the biomedical action space. 
+Biomni-E1 only scratches the surface of what’s possible in the biomedical action space.
 
 Now, we’re building **Biomni-E2** — a next-generation environment developed **with and for the community**.
 
@@ -97,7 +97,7 @@ We believe that by collaboratively defining and curating a shared library of sta
 
 **Join us in shaping the future of biomedical AI agent.**
 
-- **Contributors with significant impact** (e.g., 10+ significant & integrated tool contributions or equivalent) will be **invited as co-authors** on our upcoming paper in a top-tier journal or conference.  
+- **Contributors with significant impact** (e.g., 10+ significant & integrated tool contributions or equivalent) will be **invited as co-authors** on our upcoming paper in a top-tier journal or conference.
 - **All contributors** will be acknowledged in our publications.
 - More contributor perks...
 

@@ -14,7 +14,7 @@ if ! command -v jq &> /dev/null; then
     echo -e "${YELLOW}jq is not installed. Installing jq for JSON parsing...${NC}"
     # Use conda to install jq (no sudo required)
     conda install -y -c conda-forge jq
-    
+
     if [ $? -ne 0 ]; then
         echo -e "${RED}Failed to install jq with conda. Please install it manually.${NC}"
         echo "Visit: https://stedolan.github.io/jq/download/"
@@ -25,7 +25,7 @@ fi
 # Function to clean up old installations
 cleanup_old_installations() {
     echo -e "${YELLOW}Checking for old installations...${NC}"
-    
+
     # Check for old installation in AFS
     local old_afs_dir="/afs/cs.stanford.edu/u/$(whoami)/biomni_tools"
     if [ -d "$old_afs_dir" ]; then
@@ -34,7 +34,7 @@ cleanup_old_installations() {
         rm -rf "$old_afs_dir/bin"
         echo -e "${GREEN}Old bin directory removed.${NC}"
     fi
-    
+
     # Check for old installation in HOME
     local old_home_dir="$HOME/biomni_tools"
     if [ -d "$old_home_dir" ] && [ "$old_home_dir" != "$TOOLS_DIR" ]; then
@@ -43,7 +43,7 @@ cleanup_old_installations() {
         rm -rf "$old_home_dir/bin"
         echo -e "${GREEN}Old bin directory removed.${NC}"
     fi
-    
+
     # Clean up PATH
     echo -e "${YELLOW}Cleaning up PATH...${NC}"
     PATH=$(echo $PATH | tr ':' '\n' | grep -v "biomni_tools/bin" | tr '\n' ':' | sed 's/:$//')
@@ -107,57 +107,57 @@ install_tool() {
     local version_cmd=$4
     local tool_dir_name=$(echo "$tool_name" | tr '[:upper:]' '[:lower:]' | tr ' .' '_')
     local binary_name=$(basename "$binary_path")
-    
+
     echo -e "\n${BLUE}=== Installing $tool_name ===${NC}"
-    
+
     # Check if the tool is already installed
     if [ -f "$TOOLS_DIR/bin/$binary_name" ]; then
         echo -e "${GREEN}$tool_name is already installed at $TOOLS_DIR/bin/$binary_name${NC}"
         echo -e "${YELLOW}Testing installation...${NC}"
-        
+
         if [ -n "$version_cmd" ]; then
             echo -e "${YELLOW}Running version command: $TOOLS_DIR/bin/$binary_name $version_cmd${NC}"
             $TOOLS_DIR/bin/$binary_name $version_cmd
         fi
-        
+
         echo -e "${GREEN}Skipping download and installation.${NC}"
         return 0
     fi
-    
+
     # Create directory for the tool
     mkdir -p "$TOOLS_DIR/$tool_dir_name"
-    
+
     # Special handling for HOMER
     if [ "$tool_name" = "HOMER" ]; then
         echo -e "${YELLOW}Installing HOMER via Perl script...${NC}"
-        
+
         # Download the configuration script directly to the bin directory
         wget -v "$download_url" -O "$TOOLS_DIR/bin/configureHomer.pl"
-        
+
         if [ $? -ne 0 ]; then
             echo -e "${RED}Failed to download HOMER configuration script from $download_url${NC}"
             return 1
         fi
-        
+
         # Make the script executable
         chmod +x "$TOOLS_DIR/bin/configureHomer.pl"
-        
+
         # Create a HOMER installation directory
         mkdir -p "$TOOLS_DIR/$tool_dir_name/homer"
-        
+
         # Run the configuration script
         echo -e "${YELLOW}Running HOMER configuration script...${NC}"
         echo -e "${YELLOW}This will install HOMER to $TOOLS_DIR/$tool_dir_name/homer${NC}"
-        
+
         # Install HOMER with batch mode ("-b" flag for basic installation)
         # Use -local to specify the absolute installation directory
         "$TOOLS_DIR/bin/configureHomer.pl" -install -local "$TOOLS_DIR/$tool_dir_name/homer" -b
-        
+
         if [ $? -ne 0 ]; then
             echo -e "${RED}Failed to install HOMER.${NC}"
             return 1
         fi
-        
+
         # Create symlinks to HOMER binaries
         echo -e "${YELLOW}Creating symlinks to HOMER binaries...${NC}"
         for homer_bin in "$TOOLS_DIR/$tool_dir_name/homer/bin/"*; do
@@ -165,60 +165,60 @@ install_tool() {
                 ln -sf "$homer_bin" "$TOOLS_DIR/bin/$(basename "$homer_bin")"
             fi
         done
-        
+
         # Create a sourceable environment setup file
         echo "#!/bin/bash" > "$TOOLS_DIR/$tool_dir_name/homer_env.sh"
         echo "export PATH=\"$TOOLS_DIR/$tool_dir_name/homer/bin:\$PATH\"" >> "$TOOLS_DIR/$tool_dir_name/homer_env.sh"
         echo "export HOMER=\"$TOOLS_DIR/$tool_dir_name/homer\"" >> "$TOOLS_DIR/$tool_dir_name/homer_env.sh"
         chmod +x "$TOOLS_DIR/$tool_dir_name/homer_env.sh"
-        
+
         # Add the HOMER environment to the global setup_path.sh
         echo "# HOMER environment" >> "$TOOLS_DIR/setup_path.sh"
         echo "export PATH=\"$TOOLS_DIR/$tool_dir_name/homer/bin:\$PATH\"" >> "$TOOLS_DIR/setup_path.sh"
         echo "export HOMER=\"$TOOLS_DIR/$tool_dir_name/homer\"" >> "$TOOLS_DIR/setup_path.sh"
-        
+
         echo -e "${GREEN}HOMER installed successfully!${NC}"
         echo -e "${YELLOW}To use HOMER, you may need to source the environment file:${NC}"
         echo -e "${GREEN}source $TOOLS_DIR/$tool_dir_name/homer_env.sh${NC}"
         echo -e "${YELLOW}Or you can run configureHomer.pl directly from:${NC}"
         echo -e "${GREEN}$TOOLS_DIR/bin/configureHomer.pl${NC}"
         return 0
-    
+
     # Special handling for FastTree (requires compilation)
     elif [ "$tool_name" = "FastTree" ]; then
         echo -e "${YELLOW}Installing FastTree from source...${NC}"
-        
+
         # Download the source
         wget -v "$download_url" -O "$TOOLS_DIR/$tool_dir_name/FastTree.c"
-        
+
         if [ $? -ne 0 ]; then
             echo -e "${RED}Failed to download FastTree source from $download_url${NC}"
             return 1
         fi
-        
+
         # Compile FastTree
         echo -e "${YELLOW}Compiling FastTree...${NC}"
         echo -e "${YELLOW}This may take a few minutes.${NC}"
-        
+
         # Try to compile with SSE support first
         (cd "$TOOLS_DIR/$tool_dir_name" && gcc -O3 -finline-functions -funroll-loops -Wall -o FastTree FastTree.c -lm)
-        
+
         # If compilation fails, try without SSE support
         if [ $? -ne 0 ]; then
             echo -e "${YELLOW}Compilation with SSE failed, trying without SSE...${NC}"
             (cd "$TOOLS_DIR/$tool_dir_name" && gcc -DNO_SSE -O3 -finline-functions -funroll-loops -Wall -o FastTree FastTree.c -lm)
-            
+
             if [ $? -ne 0 ]; then
                 echo -e "${RED}Failed to compile FastTree.${NC}"
                 return 1
             fi
         fi
-        
+
         # Create symlink
         ln -sf "$TOOLS_DIR/$tool_dir_name/FastTree" "$TOOLS_DIR/bin/FastTree"
-        
+
         echo -e "${GREEN}FastTree installed successfully!${NC}"
-        
+
         # Test installation
         if [ -f "$TOOLS_DIR/bin/FastTree" ]; then
             echo -e "${GREEN}FastTree installed successfully!${NC}"
@@ -231,41 +231,41 @@ install_tool() {
             echo -e "${YELLOW}Binary not found at: $TOOLS_DIR/bin/FastTree${NC}"
             return 1
         fi
-        
+
         return 0
-        
+
     # Special handling for BWA (requires compilation)
     elif [ "$tool_name" = "BWA" ]; then
         echo -e "${YELLOW}Installing BWA...${NC}"
-        
+
         # Check if git is installed
         if ! command -v git &> /dev/null; then
             echo -e "${RED}Git is not installed. Please install git to continue.${NC}"
             return 1
         fi
-        
+
         # Clone the repository
         echo -e "${YELLOW}Cloning BWA repository from $download_url...${NC}"
         mkdir -p "$TOOLS_DIR/$tool_dir_name"
         git clone "$download_url" "$TOOLS_DIR/$tool_dir_name"
-        
+
         if [ $? -ne 0 ]; then
             echo -e "${RED}Failed to clone BWA repository from $download_url${NC}"
             return 1
         fi
-        
+
         # Compile BWA
         echo -e "${YELLOW}Compiling BWA...${NC}"
         (cd "$TOOLS_DIR/$tool_dir_name" && make)
-        
+
         if [ $? -ne 0 ]; then
             echo -e "${RED}Failed to compile BWA.${NC}"
             return 1
         fi
-        
+
         # Create symlink
         ln -sf "$TOOLS_DIR/$tool_dir_name/bwa" "$TOOLS_DIR/bin/bwa"
-        
+
         # Test installation
         if [ -f "$TOOLS_DIR/bin/bwa" ]; then
             echo -e "${GREEN}BWA installed successfully!${NC}"
@@ -276,73 +276,73 @@ install_tool() {
             echo -e "${YELLOW}Binary not found at: $TOOLS_DIR/bin/bwa${NC}"
             return 1
         fi
-        
+
         return 0
     fi
-    
+
     # Download the tool
     echo -e "${YELLOW}Downloading $tool_name from: $download_url${NC}"
-    
+
     # Determine file extension
     if [[ "$download_url" == *".zip" ]]; then
         # Use -v for verbose output to help diagnose issues
         wget -v "$download_url" -O "$TOOLS_DIR/$tool_dir_name.zip"
-        
+
         if [ $? -ne 0 ]; then
             echo -e "${RED}Failed to download $tool_name from $download_url${NC}"
             echo -e "${YELLOW}Please check your internet connection and try again.${NC}"
             echo -e "${YELLOW}If the problem persists, the download URL may be incorrect or the server may be down.${NC}"
             return 1
         fi
-        
+
         echo -e "${YELLOW}Extracting $tool_name...${NC}"
         unzip -q -o "$TOOLS_DIR/$tool_dir_name.zip" -d "$TOOLS_DIR/$tool_dir_name"
-        
+
         if [ $? -ne 0 ]; then
             echo -e "${RED}Failed to extract $tool_name.${NC}"
             return 1
         fi
-        
+
         # Clean up
         rm "$TOOLS_DIR/$tool_dir_name.zip"
     elif [[ "$download_url" == *".tar.gz" ]]; then
         # Use -v for verbose output to help diagnose issues
         wget -v "$download_url" -O "$TOOLS_DIR/$tool_dir_name.tar.gz"
-        
+
         if [ $? -ne 0 ]; then
             echo -e "${RED}Failed to download $tool_name from $download_url${NC}"
             echo -e "${YELLOW}Please check your internet connection and try again.${NC}"
             echo -e "${YELLOW}If the problem persists, the download URL may be incorrect or the server may be down.${NC}"
             return 1
         fi
-        
+
         echo -e "${YELLOW}Extracting $tool_name...${NC}"
         mkdir -p "$TOOLS_DIR/$tool_dir_name"
         tar -xzf "$TOOLS_DIR/$tool_dir_name.tar.gz" -C "$TOOLS_DIR/$tool_dir_name" --strip-components=1
-        
+
         if [ $? -ne 0 ]; then
             echo -e "${RED}Failed to extract $tool_name.${NC}"
             return 1
         fi
-        
+
         # Clean up
         rm "$TOOLS_DIR/$tool_dir_name.tar.gz"
     # Handle executable files directly (for MUSCLE)
     elif [[ "$tool_name" = "MUSCLE" ]]; then
         echo -e "${YELLOW}Downloading $tool_name binary...${NC}"
         wget -v "$download_url" -O "$TOOLS_DIR/$tool_dir_name/$binary_name"
-        
+
         if [ $? -ne 0 ]; then
             echo -e "${RED}Failed to download $tool_name from $download_url${NC}"
             return 1
         fi
-        
+
         # Make executable
         chmod +x "$TOOLS_DIR/$tool_dir_name/$binary_name"
-        
+
         # Create symlink
         ln -sf "$TOOLS_DIR/$tool_dir_name/$binary_name" "$TOOLS_DIR/bin/$binary_name"
-        
+
         # Test installation
         if [ -f "$TOOLS_DIR/bin/$binary_name" ]; then
             echo -e "${GREEN}$tool_name installed successfully!${NC}"
@@ -355,28 +355,28 @@ install_tool() {
             echo -e "${YELLOW}Binary not found at: $TOOLS_DIR/bin/$binary_name${NC}"
             return 1
         fi
-        
+
         return 0
     else
         echo -e "${RED}Unsupported file format for $tool_name.${NC}"
         return 1
     fi
-    
+
     # Find the binary path
     local full_binary_path=$(find "$TOOLS_DIR/$tool_dir_name" -name "$(basename "$binary_path")" | head -n 1)
-    
+
     if [ -z "$full_binary_path" ]; then
         echo -e "${RED}Could not find binary for $tool_name.${NC}"
         echo -e "${YELLOW}Looking for binary at expected path: $TOOLS_DIR/$tool_dir_name/$binary_path${NC}"
         full_binary_path="$TOOLS_DIR/$tool_dir_name/$binary_path"
     fi
-    
+
     # Make the binary executable
     chmod +x "$full_binary_path"
-    
+
     # Create symlink in bin directory
     ln -sf "$full_binary_path" "$TOOLS_DIR/bin/$binary_name"
-    
+
     # Test installation
     if [ -f "$TOOLS_DIR/bin/$binary_name" ]; then
         echo -e "${GREEN}$tool_name installed successfully!${NC}"
@@ -389,7 +389,7 @@ install_tool() {
         echo -e "${YELLOW}Binary not found at: $TOOLS_DIR/bin/$binary_name${NC}"
         return 1
     fi
-    
+
     return 0
 }
 
@@ -397,11 +397,11 @@ install_tool() {
 install_tool_from_config() {
     local tool_index=$1
     local auto_install=${2:-0}
-    
+
     # Get tool information from config
     local tool_name=$(jq -r ".tools[$tool_index].name" "$CONFIG_FILE")
     local tool_desc=$(jq -r ".tools[$tool_index].description" "$CONFIG_FILE")
-    
+
     # Determine the appropriate download URL based on the system
     local download_url=""
     if [[ "$(uname)" == "Darwin" ]]; then
@@ -416,19 +416,19 @@ install_tool_from_config() {
         # Linux
         download_url=$(jq -r ".tools[$tool_index].downloads.linux" "$CONFIG_FILE")
     fi
-    
+
     local binary_path=$(jq -r ".tools[$tool_index].binary_path" "$CONFIG_FILE")
     local version_cmd=$(jq -r ".tools[$tool_index].version_command" "$CONFIG_FILE")
-    
+
     # Install the tool
     echo -e "\n${YELLOW}$tool_name: $tool_desc${NC}"
-    
+
     # If auto_install is enabled, install without asking
     if [ "$auto_install" -eq 1 ]; then
         install_tool "$tool_name" "$download_url" "$binary_path" "$version_cmd"
         return $?
     fi
-    
+
     # Otherwise, ask for confirmation
     read -p "Install $tool_name? (y/n) " -n 1 -r
     echo
@@ -436,14 +436,14 @@ install_tool_from_config() {
         install_tool "$tool_name" "$download_url" "$binary_path" "$version_cmd"
         return $?
     fi
-    
+
     return 0
 }
 
 # Function to add a new tool to the config
 add_new_tool() {
     echo -e "\n${BLUE}=== Add a New Tool ===${NC}"
-    
+
     read -p "Tool name: " tool_name
     read -p "Tool description: " tool_desc
     read -p "Tool website: " tool_website
@@ -452,10 +452,10 @@ add_new_tool() {
     read -p "macOS ARM64 download URL: " macos_arm64_url
     read -p "Binary path (relative to extraction): " binary_path
     read -p "Version command (e.g., --version): " version_cmd
-    
+
     # Generate function name
     function_name="install_$(echo "$tool_name" | tr '[:upper:]' '[:lower:]' | tr ' .' '_')"
-    
+
     # Create new tool JSON
     new_tool=$(cat <<EOF
 {
@@ -473,12 +473,12 @@ add_new_tool() {
 }
 EOF
 )
-    
+
     # Add to config file
     jq ".tools += [$new_tool]" "$CONFIG_FILE" > "$CONFIG_FILE.tmp" && mv "$CONFIG_FILE.tmp" "$CONFIG_FILE"
-    
+
     echo -e "${GREEN}Tool added to configuration!${NC}"
-    
+
     # Ask if user wants to install the tool now
     read -p "Install $tool_name now? (y/n) " -n 1 -r
     echo
@@ -492,24 +492,24 @@ EOF
 install_all_tools() {
     local auto_install=${1:-0}
     local num_tools=$(jq '.tools | length' "$CONFIG_FILE")
-    
+
     echo -e "\n${BLUE}Installing all command-line tools...${NC}"
-    
+
     for (( i=0; i<$num_tools; i++ )); do
         install_tool_from_config "$i" "$auto_install"
     done
-    
+
     return 0
 }
 
 # Function to add PATH to shell profile
 add_path_to_profile() {
     local force_profile=${1:-""}
-    
+
     # Try to detect the shell profile file
     local profile_file=""
     local shell_name=$(basename "$SHELL")
-    
+
     # Create a sourceable file in the tools directory with PATH cleanup
     echo "#!/bin/bash" > "$TOOLS_DIR/setup_path.sh"
     echo "# Added by biomni setup" >> "$TOOLS_DIR/setup_path.sh"
@@ -522,7 +522,7 @@ add_path_to_profile() {
     echo -e "${GREEN}Created sourceable file at $TOOLS_DIR/setup_path.sh${NC}"
     echo -e "${YELLOW}You can add this to your PATH by running:${NC}"
     echo -e "${GREEN}source $TOOLS_DIR/setup_path.sh${NC}"
-    
+
     # If a specific profile is forced, use that
     if [ -n "$force_profile" ]; then
         profile_file="$HOME/$force_profile"
@@ -559,7 +559,7 @@ add_path_to_profile() {
                 ;;
         esac
     fi
-    
+
     # If we found a profile file and it's writable, add the PATH
     if [ -n "$profile_file" ]; then
         # Create the file if it doesn't exist
@@ -567,7 +567,7 @@ add_path_to_profile() {
             echo -e "${YELLOW}Creating new profile file: $profile_file${NC}"
             touch "$profile_file"
         fi
-        
+
         if [ -w "$profile_file" ]; then
             # Check if the PATH is already in the profile
             if ! grep -q "export PATH=\"$TOOLS_DIR/bin:\$PATH\"" "$profile_file"; then
@@ -576,19 +576,19 @@ add_path_to_profile() {
                     echo -e "${YELLOW}Removing old biomni_tools paths from $profile_file...${NC}"
                     sed -i '/biomni_tools\/bin/d' "$profile_file"
                 fi
-                
+
                 echo "" >> "$profile_file"
                 echo "# Added by biomni setup" >> "$profile_file"
                 echo "# Remove any old paths first to avoid duplicates" >> "$profile_file"
                 echo "PATH=\$(echo \$PATH | tr ':' '\n' | grep -v \"biomni_tools/bin\" | tr '\n' ':' | sed 's/:$//')" >> "$profile_file"
-                
+
                 # Use the appropriate syntax for the shell
                 if [ "$shell_name" = "fish" ]; then
                     echo "set -gx PATH $TOOLS_DIR/bin \$PATH" >> "$profile_file"
                 else
                     echo "export PATH=\"$TOOLS_DIR/bin:\$PATH\"" >> "$profile_file"
                 fi
-                
+
                 echo -e "${GREEN}Added tools directory to PATH in $profile_file${NC}"
                 echo -e "${YELLOW}Note: You may need to restart your shell or run 'source $profile_file' for changes to take effect.${NC}"
             else
@@ -597,13 +597,13 @@ add_path_to_profile() {
         else
             echo -e "${RED}Profile file $profile_file is not writable.${NC}"
             echo -e "${YELLOW}Please add the following line to your shell profile manually:${NC}"
-            
+
             if [ "$shell_name" = "fish" ]; then
                 echo -e "${GREEN}set -gx PATH $TOOLS_DIR/bin \$PATH${NC}"
             else
                 echo -e "${GREEN}export PATH=\"$TOOLS_DIR/bin:\$PATH\"${NC}"
             fi
-            
+
             echo -e "${YELLOW}Or source the setup file we created:${NC}"
             echo -e "${GREEN}source $TOOLS_DIR/setup_path.sh${NC}"
         fi
@@ -611,22 +611,22 @@ add_path_to_profile() {
         # If we couldn't find a profile file, just print instructions
         echo -e "${YELLOW}Could not determine appropriate shell profile file.${NC}"
         echo -e "${YELLOW}Please add the following line to your shell profile manually:${NC}"
-        
+
         if [ "$shell_name" = "fish" ]; then
             echo -e "${GREEN}set -gx PATH $TOOLS_DIR/bin \$PATH${NC}"
         else
             echo -e "${GREEN}export PATH=\"$TOOLS_DIR/bin:\$PATH\"${NC}"
         fi
-        
+
         echo -e "${YELLOW}Or source the setup file we created:${NC}"
         echo -e "${GREEN}source $TOOLS_DIR/setup_path.sh${NC}"
     fi
-    
+
     # Always export PATH for the current session
     # Remove any old paths first to avoid duplicates
     PATH=$(echo $PATH | tr ':' '\n' | grep -v "biomni_tools/bin" | tr '\n' ':' | sed 's/:$//')
     export PATH="$TOOLS_DIR/bin:$PATH"
-    
+
     # Clear the shell's command hash table to force it to re-search the PATH
     hash -r 2>/dev/null || rehash 2>/dev/null || true
 
@@ -655,7 +655,7 @@ add_path_to_profile() {
     echo "  fi" >> "$TOOLS_DIR/test_tools.sh"
     echo "done" >> "$TOOLS_DIR/test_tools.sh"
     chmod +x "$TOOLS_DIR/test_tools.sh"
-    
+
     echo -e "${YELLOW}Created test script at $TOOLS_DIR/test_tools.sh${NC}"
     echo -e "${YELLOW}You can run it to verify the tools are in your PATH:${NC}"
     echo -e "${GREEN}$TOOLS_DIR/test_tools.sh${NC}"
@@ -682,30 +682,30 @@ verify_installation() {
     echo -e "\n${BLUE}=== Verifying Installation ===${NC}"
     echo -e "${YELLOW}Tools directory: $TOOLS_DIR${NC}"
     echo -e "${YELLOW}Bin directory: $TOOLS_DIR/bin${NC}"
-    
+
     # Check if bin directory exists
     if [ ! -d "$TOOLS_DIR/bin" ]; then
         echo -e "${RED}Bin directory does not exist!${NC}"
         return 1
     fi
-    
+
     # Check if there are any tools in the bin directory
     local tool_count=$(ls -1 "$TOOLS_DIR/bin" 2>/dev/null | wc -l)
     if [ "$tool_count" -eq 0 ]; then
         echo -e "${RED}No tools found in bin directory!${NC}"
         return 1
     fi
-    
+
     echo -e "${GREEN}Found $tool_count tools in bin directory.${NC}"
-    
+
     # List all tools
     echo -e "${YELLOW}Installed tools:${NC}"
     ls -la "$TOOLS_DIR/bin"
-    
+
     # Check if tools are in PATH
     echo -e "\n${YELLOW}Checking if tools are in PATH...${NC}"
     echo -e "${YELLOW}Current PATH: $PATH${NC}"
-    
+
     # Check if TOOLS_DIR/bin is in PATH
     if [[ "$PATH" == *"$TOOLS_DIR/bin"* ]]; then
         echo -e "${GREEN}Tools directory is in PATH.${NC}"
@@ -714,7 +714,7 @@ verify_installation() {
         echo -e "${YELLOW}Please run: source $TOOLS_DIR/setup_path.sh${NC}"
         return 1
     fi
-    
+
     # Check if each tool is accessible
     echo -e "\n${YELLOW}Testing tool accessibility:${NC}"
     for tool in $(ls "$TOOLS_DIR/bin"); do
@@ -724,13 +724,13 @@ verify_installation() {
             echo -e "${RED}$tool: NOT FOUND IN PATH${NC}"
         fi
     done
-    
+
     echo -e "\n${GREEN}Installation verification completed.${NC}"
     echo -e "${YELLOW}If you encounter any issues, please run:${NC}"
     echo -e "${GREEN}source $TOOLS_DIR/setup_path.sh${NC}"
     echo -e "${YELLOW}And then run the test script:${NC}"
     echo -e "${GREEN}$TOOLS_DIR/test_tools.sh${NC}"
-    
+
     echo -e "\n${YELLOW}IMPORTANT: If you see 'No such file or directory' errors when running tools,${NC}"
     echo -e "${YELLOW}your shell may be using cached paths to old tool locations.${NC}"
     echo -e "${YELLOW}To fix this, run:${NC}"
@@ -739,35 +739,35 @@ verify_installation() {
     echo -e "${GREEN}hash -r${NC} (for bash/sh)"
     echo -e "${GREEN}rehash${NC} (for zsh/csh)"
     echo -e "${YELLOW}Or simply start a new terminal session.${NC}"
-    
+
     return 0
 }
 
 # Main installation function
 install_cli_tools() {
     echo -e "${YELLOW}=== Installing Command-Line Bioinformatics Tools ===${NC}"
-    
+
     # Try to add the tools bin directory to PATH
     add_path_to_profile
-    
+
     # Check if auto-install mode is enabled
     if [ -n "$BIOMNI_AUTO_INSTALL" ]; then
         install_all_tools 1
-        
+
         echo -e "\n${GREEN}CLI tools installation completed!${NC}"
         echo -e "The tools are installed in: ${YELLOW}$TOOLS_DIR${NC}"
         echo -e "Binaries are symlinked in: ${YELLOW}$TOOLS_DIR/bin${NC}"
         echo -e "Tools have been added to your PATH for the current session."
-        
+
         # Verify installation
         verify_installation
-        
+
         return 0
     fi
-    
+
     # Get the number of tools in the config
     local num_tools=$(jq '.tools | length' "$CONFIG_FILE")
-    
+
     # Display menu
     echo -e "\n${BLUE}Available tools:${NC}"
     for (( i=0; i<$num_tools; i++ )); do
@@ -779,10 +779,10 @@ install_cli_tools() {
     echo -e "${YELLOW}$((num_tools+2)). Install all tools${NC}"
     echo -e "${YELLOW}$((num_tools+3)). Add tools directory to shell profile${NC}"
     echo -e "${YELLOW}0. Exit${NC}"
-    
+
     # Get user choice
     read -p "Enter your choice (0-$((num_tools+3))): " choice
-    
+
     if [[ "$choice" -eq 0 ]]; then
         echo -e "${YELLOW}Exiting...${NC}"
         return 0
@@ -797,7 +797,7 @@ install_cli_tools() {
         echo -e "1. Auto-detect profile (recommended)"
         echo -e "2. Specify profile file"
         read -p "Enter your choice (1-2): " profile_choice
-        
+
         if [[ "$profile_choice" -eq 1 ]]; then
             add_path_to_profile
         elif [[ "$profile_choice" -eq 2 ]]; then
@@ -819,12 +819,12 @@ install_cli_tools() {
         echo -e "${RED}Invalid choice.${NC}"
         return 1
     fi
-    
+
     echo -e "\n${GREEN}CLI tools installation completed!${NC}"
     echo -e "The tools are installed in: ${YELLOW}$TOOLS_DIR${NC}"
     echo -e "Binaries are symlinked in: ${YELLOW}$TOOLS_DIR/bin${NC}"
     echo -e "Tools have been added to your PATH for the current session."
-    
+
     # Ask if user wants to install more tools or configure PATH
     read -p "Install more tools or configure PATH? (y/n) " -n 1 -r
     echo
@@ -854,21 +854,21 @@ if [ "$1" = "--help" ] || [ "$1" = "-h" ]; then
 elif [ "$1" = "--auto" ]; then
     # Set BIOMNI_AUTO_INSTALL if it's not already set
     export BIOMNI_AUTO_INSTALL=1
-    
+
     # Run in auto-install mode without showing the menu
     install_all_tools 1
-    
+
     # Add to profile automatically
     add_path_to_profile
-    
+
     # Verify installation
     verify_installation
-    
+
     echo -e "\n${GREEN}CLI tools installation completed!${NC}"
     echo -e "The tools are installed in: ${YELLOW}$TOOLS_DIR${NC}"
     echo -e "Binaries are symlinked in: ${YELLOW}$TOOLS_DIR/bin${NC}"
     echo -e "Tools have been added to your PATH for the current session."
-    
+
     exit 0
 elif [ "$1" = "--profile" ] && [ -n "$2" ]; then
     # Add to a specific profile file
@@ -877,18 +877,18 @@ elif [ "$1" = "--profile" ] && [ -n "$2" ]; then
 elif [ -n "$BIOMNI_AUTO_INSTALL" ]; then
     # Run in auto-install mode without showing the menu
     install_all_tools 1
-    
+
     # Add to profile automatically
     add_path_to_profile
-    
+
     # Verify installation
     verify_installation
-    
+
     echo -e "\n${GREEN}CLI tools installation completed!${NC}"
     echo -e "The tools are installed in: ${YELLOW}$TOOLS_DIR${NC}"
     echo -e "Binaries are symlinked in: ${YELLOW}$TOOLS_DIR/bin${NC}"
     echo -e "Tools have been added to your PATH for the current session."
-    
+
     exit 0
 elif [ -n "$1" ]; then
     echo -e "${RED}Unknown option: $1${NC}"
@@ -897,4 +897,4 @@ elif [ -n "$1" ]; then
 else
     # Run the interactive installation
     install_cli_tools
-fi 
+fi

@@ -24,7 +24,7 @@ Tools are implemented as Python functions in `biomni/tool/XXX.py`, organized by 
    ```python
    from biomni.utils import function_to_api_schema
    from biomni.llm import get_llm
-   
+
    llm = get_llm('claude-sonnet-4-20250514')
    desc = function_to_api_schema(function_code, llm)
    ```
@@ -65,19 +65,19 @@ class YourBenchmark:
     def __init__(self):
         # Initialize benchmark
         pass
-    
+
     def __len__(self):
         # Return dataset size
         pass
-    
+
     def get_example(self, index):
         # Return dataset item at index
         pass
-    
+
     def evaluate(self):
         # Evaluation logic (flexible input format)
         pass
-    
+
     def output_class(self):
         # Return expected agent output format
         pass

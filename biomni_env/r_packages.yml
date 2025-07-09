@@ -4,4 +4,4 @@ channels:
   - defaults
 dependencies:
   - r-essentials
-  - r-base>=4.4 
+  - r-base>=4.4

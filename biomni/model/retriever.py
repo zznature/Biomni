@@ -1,14 +1,9 @@
-from typing import List
-import pandas as pd
-import os
-import random
+import contextlib
 import re
-from langchain_openai import OpenAIEmbeddings, ChatOpenAI
-from langchain_core.messages import HumanMessage
 
-from biomni.utils import process_bio_retrieval_ducoment
-from langchain_community.vectorstores import FAISS
-from langchain_core.documents import Document
+from langchain_core.messages import HumanMessage
+from langchain_openai import ChatOpenAI
+
 
 class ToolRetriever:
     """Retrieve tools from the tool registry."""
@@ -17,17 +12,17 @@ class ToolRetriever:
         pass
 
     def prompt_based_retrieval(self, query: str, resources: dict, llm=None) -> dict:
-        """
-        Use a prompt-based approach to retrieve the most relevant resources for a query.
-        
+        """Use a prompt-based approach to retrieve the most relevant resources for a query.
+
         Args:
             query: The user's query
-            resources: A dictionary with keys 'tools', 'data_lake', and 'libraries', 
+            resources: A dictionary with keys 'tools', 'data_lake', and 'libraries',
                       each containing a list of available resources
             llm: Optional LLM instance to use for retrieval (if None, will create a new one)
-                      
+
         Returns:
             A dictionary with the same keys, but containing only the most relevant resources
+
         """
         # Create a prompt for the LLM to select relevant resources
         prompt = f"""
@@ -40,13 +35,13 @@ Be generous in your selection - include resources that might be useful for the t
 It's better to include slightly more resources than to miss potentially useful ones.
 
 AVAILABLE TOOLS:
-{self._format_resources_for_prompt(resources.get('tools', []))}
+{self._format_resources_for_prompt(resources.get("tools", []))}
 
 AVAILABLE DATA LAKE ITEMS:
-{self._format_resources_for_prompt(resources.get('data_lake', []))}
+{self._format_resources_for_prompt(resources.get("data_lake", []))}
 
 AVAILABLE SOFTWARE LIBRARIES:
-{self._format_resources_for_prompt(resources.get('libraries', []))}
+{self._format_resources_for_prompt(resources.get("libraries", []))}
 
 For each category, respond with ONLY the indices of the relevant items in the following format:
 TOOLS: [list of indices]
@@ -70,82 +65,84 @@ IMPORTANT GUIDELINES:
 7. Don't exclude resources just because they're not explicitly mentioned in the query
 8. When in doubt about a database tool or molecular biology tool, include it rather than exclude it
 """
-        
+
         # Use the provided LLM or create a new one
         if llm is None:
             llm = ChatOpenAI(model="gpt-4o")
-        
+
         # Invoke the LLM
-        if hasattr(llm, 'invoke'):
+        if hasattr(llm, "invoke"):
             # For LangChain-style LLMs
             response = llm.invoke([HumanMessage(content=prompt)])
             response_content = response.content
         else:
             # For other LLM interfaces
             response_content = str(llm(prompt))
-        
+
         # Parse the response to extract the selected indices
         selected_indices = self._parse_llm_response(response_content)
-        
+
         # Get the selected resources
         selected_resources = {
-            'tools': [resources['tools'][i] for i in selected_indices.get('tools', []) if i < len(resources.get('tools', []))],
-            'data_lake': [resources['data_lake'][i] for i in selected_indices.get('data_lake', []) if i < len(resources.get('data_lake', []))],
-            'libraries': [resources['libraries'][i] for i in selected_indices.get('libraries', []) if i < len(resources.get('libraries', []))]
+            "tools": [
+                resources["tools"][i] for i in selected_indices.get("tools", []) if i < len(resources.get("tools", []))
+            ],
+            "data_lake": [
+                resources["data_lake"][i]
+                for i in selected_indices.get("data_lake", [])
+                if i < len(resources.get("data_lake", []))
+            ],
+            "libraries": [
+                resources["libraries"][i]
+                for i in selected_indices.get("libraries", [])
+                if i < len(resources.get("libraries", []))
+            ],
         }
 
         return selected_resources
-    
+
     def _format_resources_for_prompt(self, resources: list) -> str:
         """Format resources for inclusion in the prompt."""
         formatted = []
         for i, resource in enumerate(resources):
             if isinstance(resource, dict):
                 # Handle dictionary format (from tool registry or data lake/libraries with descriptions)
-                name = resource.get('name', f"Resource {i}")
-                description = resource.get('description', '')
+                name = resource.get("name", f"Resource {i}")
+                description = resource.get("description", "")
                 formatted.append(f"{i}. {name}: {description}")
             elif isinstance(resource, str):
                 # Handle string format (simple strings)
                 formatted.append(f"{i}. {resource}")
             else:
                 # Try to extract name and description from tool objects
-                name = getattr(resource, 'name', str(resource))
-                desc = getattr(resource, 'description', '')
+                name = getattr(resource, "name", str(resource))
+                desc = getattr(resource, "description", "")
                 formatted.append(f"{i}. {name}: {desc}")
-        
+
         return "\n".join(formatted) if formatted else "None available"
-    
+
     def _parse_llm_response(self, response: str) -> dict:
         """Parse the LLM response to extract the selected indices."""
-        selected_indices = {
-            'tools': [],
-            'data_lake': [],
-            'libraries': []
-        }
-        
-        # Extract indices for each category
-        tools_match = re.search(r'TOOLS:\s*\[(.*?)\]', response, re.IGNORECASE)
-        if tools_match and tools_match.group(1).strip():
-            try:
-                selected_indices['tools'] = [int(idx.strip()) for idx in tools_match.group(1).split(',') if idx.strip()]
-            except ValueError:
-                pass
-        
-        data_lake_match = re.search(r'DATA_LAKE:\s*\[(.*?)\]', response, re.IGNORECASE)
-        if data_lake_match and data_lake_match.group(1).strip():
-            try:
-                selected_indices['data_lake'] = [int(idx.strip()) for idx in data_lake_match.group(1).split(',') if idx.strip()]
-            except ValueError:
-                pass
-        
-        libraries_match = re.search(r'LIBRARIES:\s*\[(.*?)\]', response, re.IGNORECASE)
-        if libraries_match and libraries_match.group(1).strip():
-            try:
-                selected_indices['libraries'] = [int(idx.strip()) for idx in libraries_match.group(1).split(',') if idx.strip()]
-            except ValueError:
-                pass
-        
-        return selected_indices
+        selected_indices = {"tools": [], "data_lake": [], "libraries": []}
 
-    
+        # Extract indices for each category
+        tools_match = re.search(r"TOOLS:\s*\[(.*?)\]", response, re.IGNORECASE)
+        if tools_match and tools_match.group(1).strip():
+            with contextlib.suppress(ValueError):
+                selected_indices["tools"] = [int(idx.strip()) for idx in tools_match.group(1).split(",") if idx.strip()]
+
+        data_lake_match = re.search(r"DATA_LAKE:\s*\[(.*?)\]", response, re.IGNORECASE)
+        if data_lake_match and data_lake_match.group(1).strip():
+            with contextlib.suppress(ValueError):
+                selected_indices["data_lake"] = [
+                    int(idx.strip()) for idx in data_lake_match.group(1).split(",") if idx.strip()
+                ]
+
+        libraries_match = re.search(r"LIBRARIES:\s*\[(.*?)\]", response, re.IGNORECASE)
+        if libraries_match and libraries_match.group(1).strip():
+            with contextlib.suppress(ValueError):
+                selected_indices["libraries"] = [
+                    int(idx.strip()) for idx in libraries_match.group(1).split(",") if idx.strip()
+                ]
+
+        return selected_indices

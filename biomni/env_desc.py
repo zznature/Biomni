@@ -31,15 +31,15 @@ data_lake_dict = {
     "go-plus.json": "Gene ontology data for functional gene annotations.",
     "gtex_tissue_gene_tpm.parquet": "Gene expression (TPM) across human tissues from GTEx.",
     "gwas_catalog.pkl": "Genome-wide association studies (GWAS) results.",
-    "GDPx2_ProcessedData_GSEA-HallmarkGenes.csv" : "GSEA results of MSigDB Hallmark gene sets for all GDPx2 clusters/conditions.",
-    "GDPx2_ProcessedData_GSEA-HDACInhibitors.csv" : "GSEA results focused on HDAC-inhibitor response signatures in GDPx2.",
-    #"GDPx2_ProcessedData_SupplementaryTable6-DifferentialExpression.csv" : "Full differential-expression table (all genes and all perturbations) — Supplementary Table 6.",
-    "GDPx2_ProcessedData_SupplementaryTable8-DoseResponse.csv" : "Dose-response summary for each compound/perturbation — Supplementary Table 8.",
-    "GDPx2_annotations_ClusterMemberships.csv" : "Cell- or sample-level cluster assignments produced from GDPx2 analysis.",
-    "GDPx2_annotations_CompoundLibrary.csv" : "Lookup table of compounds (ID, name, MoA, concentration) used in the GDPx2 screen.",
-    "GDPx2_annotations_DataDictionary.xlsx" : "Data dictionary describing every column/field in GDPx2 processed and annotation files.",
+    "GDPx2_ProcessedData_GSEA-HallmarkGenes.csv": "GSEA results of MSigDB Hallmark gene sets for all GDPx2 clusters/conditions.",
+    "GDPx2_ProcessedData_GSEA-HDACInhibitors.csv": "GSEA results focused on HDAC-inhibitor response signatures in GDPx2.",
+    # "GDPx2_ProcessedData_SupplementaryTable6-DifferentialExpression.csv" : "Full differential-expression table (all genes and all perturbations) — Supplementary Table 6.",
+    "GDPx2_ProcessedData_SupplementaryTable8-DoseResponse.csv": "Dose-response summary for each compound/perturbation — Supplementary Table 8.",
+    "GDPx2_annotations_ClusterMemberships.csv": "Cell- or sample-level cluster assignments produced from GDPx2 analysis.",
+    "GDPx2_annotations_CompoundLibrary.csv": "Lookup table of compounds (ID, name, MoA, concentration) used in the GDPx2 screen.",
+    "GDPx2_annotations_DataDictionary.xlsx": "Data dictionary describing every column/field in GDPx2 processed and annotation files.",
     "GDPx2_annotations_Metadata.csv": "Per-cell / per-sample metadata (e.g., batch, replicate, QC metrics) for the GDPx2 dataset.",
-    "GDPx2-GeneCounts.h5" : "Gene-counts matrix (cells and genes) for GDPx2; HDF5/AnnData-compatible.",
+    "GDPx2-GeneCounts.h5": "Gene-counts matrix (cells and genes) for GDPx2; HDF5/AnnData-compatible.",
     "hp.obo": "Official HPO release in obographs format",
     "marker_celltype.parquet": "Cell type marker genes for identification.",
     "McPAS-TCR.parquet": "T-cell receptor sequences and specificity data from McPAS database.",
@@ -80,7 +80,6 @@ data_lake_dict = {
 # Updated library_content as a dictionary with detailed descriptions
 library_content_dict = {
     # === PYTHON PACKAGES ===
-    
     # Core Bioinformatics Libraries (Python)
     "biopython": "[Python Package] A set of tools for biological computation including parsers for bioinformatics files, access to online services, and interfaces to common bioinformatics programs.",
     "biom-format": "[Python Package] The Biological Observation Matrix (BIOM) format is designed for representing biological sample by observation contingency tables with associated metadata.",
@@ -91,11 +90,10 @@ library_content_dict = {
     "pyliftover": "[Python Package] A Python implementation of UCSC liftOver tool for converting genomic coordinates between genome assemblies.",
     "biopandas": "[Python Package] A package that provides pandas DataFrames for working with molecular structures and biological data.",
     "biotite": "[Python Package] A comprehensive library for computational molecular biology, providing tools for sequence analysis, structure analysis, and more.",
-    
     # Genomics & Variant Analysis (Python)
     "gget": "[Python Package] A toolkit for accessing genomic databases and retrieving sequences, annotations, and other genomic data.",
     "lifelines": "[Python Package] A complete survival analysis library for fitting models, plotting, and statistical tests.",
-    #"scvi-tools": "[Python Package] A package for probabilistic modeling of single-cell omics data, including deep generative models.",
+    # "scvi-tools": "[Python Package] A package for probabilistic modeling of single-cell omics data, including deep generative models.",
     "gseapy": "[Python Package] A Python wrapper for Gene Set Enrichment Analysis (GSEA) and visualization.",
     "scrublet": "[Python Package] A tool for detecting doublets in single-cell RNA-seq data.",
     "cellxgene-census": "[Python Package] A tool for accessing and analyzing the CellxGene Census, a collection of single-cell datasets. To download a dataset, use the download_source_h5ad function with the dataset id as the argument (856c1b98-5727-49da-bf0f-151bdb8cb056, no .h5ad extension).",
@@ -105,17 +103,15 @@ library_content_dict = {
     "pyfaidx": "[Python Package] A Python package for efficient random access to FASTA files.",
     "pyranges": "[Python Package] A Python package for interval manipulation with a pandas-like interface.",
     "pybedtools": "[Python Package] A Python wrapper for Aaron Quinlan's BEDTools programs.",
-    
     # Structural Biology & Drug Discovery (Python)
     "rdkit": "[Python Package] A collection of cheminformatics and machine learning tools for working with chemical structures and drug discovery.",
     "deeppurpose": "[Python Package] A deep learning library for drug-target interaction prediction and virtual screening.",
     "pyscreener": "[Python Package] A Python package for virtual screening of chemical compounds.",
     "openbabel": "[Python Package] A chemical toolbox designed to speak the many languages of chemical data, supporting file format conversion and molecular modeling.",
     "descriptastorus": "[Python Package] A library for computing molecular descriptors for machine learning applications in drug discovery.",
-    #"pymol": "[Python Package] A molecular visualization system for rendering and animating 3D molecular structures.",
+    # "pymol": "[Python Package] A molecular visualization system for rendering and animating 3D molecular structures.",
     "openmm": "[Python Package] A toolkit for molecular simulation using high-performance GPU computing.",
     "pytdc": "[Python Package] A Python package for Therapeutics Data Commons, providing access to machine learning datasets for drug discovery.",
-    
     # Data Science & Statistical Analysis (Python)
     "pandas": "[Python Package] A fast, powerful, and flexible data analysis and manipulation library for Python.",
     "numpy": "[Python Package] The fundamental package for scientific computing with Python, providing support for arrays, matrices, and mathematical functions.",
@@ -129,7 +125,6 @@ library_content_dict = {
     "umap-learn": "[Python Package] Uniform Manifold Approximation and Projection, a dimension reduction technique.",
     "faiss-cpu": "[Python Package] A library for efficient similarity search and clustering of dense vectors.",
     "harmony-pytorch": "[Python Package] A PyTorch implementation of the Harmony algorithm for integrating single-cell data.",
-    
     # General Bioinformatics & Computational Utilities (Python)
     "tiledb": "[Python Package] A powerful engine for storing and analyzing large-scale genomic data.",
     "tiledbsoma": "[Python Package] A library for working with the SOMA (Stack of Matrices) format using TileDB.",
@@ -144,13 +139,12 @@ library_content_dict = {
     "arxiv": "[Python Package] A Python wrapper for the arXiv API, allowing access to scientific papers.",
     "scholarly": "[Python Package] A module to retrieve author and publication information from Google Scholar.",
     "cryosparc-tools": "[Python Package] Tools for working with cryoSPARC, a platform for cryo-EM data processing.",
-    
     "mageck": "[Python Package] Analysis of CRISPR screen data.",
     "igraph": "[Python Package] Network analysis and visualization.",
     "pyscenic": "[Python Package] Analysis of single-cell RNA-seq data and gene regulatory networks.",
     "cooler": "[Python Package] Storage and analysis of Hi-C data.",
     "trackpy": "[Python Package] Particle tracking in images and video.",
-    #"flowcytometrytools": "[Python Package] Analysis and visualization of flow cytometry data.",
+    # "flowcytometrytools": "[Python Package] Analysis and visualization of flow cytometry data.",
     "cellpose": "[Python Package] Cell segmentation in microscopy images.",
     "viennarna": "[Python Package] RNA secondary structure prediction.",
     "PyMassSpec": "[Python Package] Mass spectrometry data analysis.",
@@ -172,9 +166,7 @@ library_content_dict = {
     "FlowUtils": "Utilities for processing and analyzing flow cytometry data.",
     "arboreto": "A Python package for inferring gene regulatory networks from single-cell RNA-seq data.",
     "pdbfixer": "A Python package for fixing problems in PDB files in preparation for molecular simulations.",
-
     # === R PACKAGES ===
-    
     # Core R Packages for Data Analysis
     "ggplot2": "[R Package] A system for declaratively creating graphics, based on The Grammar of Graphics. Use with subprocess.run(['Rscript', '-e', 'library(ggplot2); ...']).",
     "dplyr": "[R Package] A grammar of data manipulation, providing a consistent set of verbs that help you solve the most common data manipulation challenges. Use with subprocess.",
@@ -182,40 +174,34 @@ library_content_dict = {
     "readr": "[R Package] A fast and friendly way to read rectangular data like CSV, TSV, and FWF. Use with subprocess.run(['Rscript', '-e', 'library(readr); ...']).",
     "stringr": "[R Package] A cohesive set of functions designed to make working with strings as easy as possible. Use with subprocess calls.",
     "Matrix": "[R Package] A package that provides classes and methods for dense and sparse matrices. Required for Seurat. Use with subprocess calls.",
-    #"Rcpp": "[R Package] Seamless R and C++ Integration, allowing R functions to call compiled C++ code. Use with subprocess calls.",
-    #"devtools": "[R Package] Tools to make developing R packages easier, including functions to install packages from GitHub. Use with subprocess calls.",
-    #"remotes": "[R Package] Install R packages from GitHub, GitLab, Bitbucket, or other remote repositories. Use with subprocess calls.",
-    
+    # "Rcpp": "[R Package] Seamless R and C++ Integration, allowing R functions to call compiled C++ code. Use with subprocess calls.",
+    # "devtools": "[R Package] Tools to make developing R packages easier, including functions to install packages from GitHub. Use with subprocess calls.",
+    # "remotes": "[R Package] Install R packages from GitHub, GitLab, Bitbucket, or other remote repositories. Use with subprocess calls.",
     # Bioinformatics R Packages
     "DESeq2": "[R Package] Differential gene expression analysis based on the negative binomial distribution. Use with subprocess.run(['Rscript', '-e', 'library(DESeq2); ...']).",
     "clusterProfiler": "[R Package] A package for statistical analysis and visualization of functional profiles for genes and gene clusters. Use with subprocess calls.",
-    #"DADA2": "[R Package] A package for modeling and correcting Illumina-sequenced amplicon errors. Use with subprocess calls.",
-    #"xcms": "[R Package] A package for processing and visualization of LC-MS and GC-MS data. Use with subprocess calls.",
-    #"FlowCore": "[R Package] Basic infrastructure for flow cytometry data. Use with subprocess calls.",
+    # "DADA2": "[R Package] A package for modeling and correcting Illumina-sequenced amplicon errors. Use with subprocess calls.",
+    # "xcms": "[R Package] A package for processing and visualization of LC-MS and GC-MS data. Use with subprocess calls.",
+    # "FlowCore": "[R Package] Basic infrastructure for flow cytometry data. Use with subprocess calls.",
     "edgeR": "[R Package] Empirical Analysis of Digital Gene Expression Data in R, for differential expression analysis. Use with subprocess calls.",
     "limma": "[R Package] Linear Models for Microarray Data, for differential expression analysis. Use with subprocess calls.",
     "harmony": "[R Package] A method for integrating and analyzing single-cell data across datasets. Use with subprocess calls.",
     "WGCNA": "[R Package] Weighted Correlation Network Analysis for studying biological networks. Use with subprocess calls.",
-    
     # === CLI TOOLS ===
-    
     # Sequence Analysis Tools
     "samtools": "[CLI Tool] A suite of programs for interacting with high-throughput sequencing data. Use with subprocess.run(['samtools', ...]).",
     "bowtie2": "[CLI Tool] An ultrafast and memory-efficient tool for aligning sequencing reads to long reference sequences. Use with subprocess.run(['bowtie2', ...]).",
     "bwa": "[CLI Tool] Burrows-Wheeler Aligner for mapping low-divergent sequences against a large reference genome. Use with subprocess.run(['bwa', ...]).",
     "bedtools": "[CLI Tool] A powerful toolset for genome arithmetic, allowing operations like intersect, merge, count, and complement on genomic features. Use with subprocess.run(['bedtools', ...]).",
     "macs2": "[CLI Tool] Model-based Analysis of ChIP-Seq data, a tool for identifying transcript factor binding sites.",
-
     # Quality Control and Processing Tools
     "fastqc": "[CLI Tool] A quality control tool for high throughput sequence data. Use with subprocess.run(['fastqc', ...]).",
     "trimmomatic": "[CLI Tool] A flexible read trimming tool for Illumina NGS data. Use with subprocess.run(['trimmomatic', ...]).",
-    
     # Multiple Sequence Alignment and Phylogenetics
     "mafft": "[CLI Tool] A multiple sequence alignment program for unix-like operating systems. Use with subprocess.run(['mafft', ...]).",
     "Homer": "[CLI Tool] Motif discovery and next-gen sequencing analysis.",
     "FastTree": "[CLI Tool] Phylogenetic trees from sequence alignments.",
     "muscle": "[CLI Tool] Multiple sequence alignment tool.",
-    
     # Genetic Analysis Tools
     "plink": "[CLI Tool] A comprehensive toolkit for genome association studies that can perform a range of large-scale analyses in a computationally efficient manner. Use with subprocess.run(['plink', ...]).",
     "plink2": "[CLI Tool] A comprehensive toolkit for genome association studies that can perform a range of large-scale analyses in a computationally efficient manner. Use with subprocess.run(['plink2', ...]).",

@@ -1,11 +1,10 @@
+from langchain_core.prompts import ChatPromptTemplate
+
 from biomni.llm import get_llm
 
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 
 class qa_llm:
-    def __init__(self, path = './data', 
-                        llm = 'claude-3-haiku-20240307', 
-                        lab_bench_reproduce = False):
+    def __init__(self, path="./data", llm="claude-3-haiku-20240307", lab_bench_reproduce=False):
         self.path = path
         self.llm = get_llm(llm)
 
@@ -22,6 +21,7 @@ Think step by step. \n
 
     def configure(self):
         pass
+
     def go(self, input):
         self.log = []
         self.log.append(("user", input))
@@ -30,7 +30,6 @@ Think step by step. \n
         return [message.content], message.content
 
     def result_formatting(self, output_class, task_intention):
-
         self.format_check_prompt = ChatPromptTemplate.from_messages(
             [
                 (
@@ -47,5 +46,5 @@ Think step by step. \n
         )
 
         checker_llm = self.format_check_prompt | self.llm.with_structured_output(output_class)
-        result = checker_llm.invoke({ "messages": [("user", str(self.log))]}).dict()
+        result = checker_llm.invoke({"messages": [("user", str(self.log))]}).dict()
         return result
