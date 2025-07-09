@@ -125,7 +125,7 @@ Experience Biomni through our no-code web interface at **[biomni.stanford.edu](h
 
 ## Note
 - This release was frozen as of April 15 2025, so it differs from the current web platform.
-- Biomni itself is MIT-licensed, but certain integrated tools, databases, or software may carry more restrictive commercial licenses. Review each component carefully before any commercial use.
+- Biomni itself is Apache 2.0-licensed, but certain integrated tools, databases, or software may carry more restrictive commercial licenses. Review each component carefully before any commercial use.
 
 ## Cite Us
 
