@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./fig/biomni_logo.png" alt="Biomni Logo" width="600px" />
+  <img src="./figs/biomni_logo.png" alt="Biomni Logo" width="600px" />
 </p>
 
 <p align="center">
