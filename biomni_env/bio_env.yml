@@ -11,7 +11,7 @@ dependencies:
   - bedtools
   - fastqc
   - trimmomatic
-  - mafft 
+  - mafft
   - gseapy
   - mageck
   - plannotate
@@ -20,7 +20,7 @@ dependencies:
     - biopython
     - biopandas
     - biotite
-    - opencv-python 
+    - opencv-python
     - rdkit
     - macs2
     - pymc3

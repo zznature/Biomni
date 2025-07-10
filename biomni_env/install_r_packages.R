@@ -10,7 +10,7 @@ options(repos = c(CRAN = "https://cran.rstudio.com/"))
 install_if_missing <- function(package_name, bioconductor = FALSE) {
   if (!require(package_name, character.only = TRUE, quietly = TRUE)) {
     cat(sprintf("Installing package: %s\n", package_name))
-    
+
     if (bioconductor) {
       if (!require("BiocManager", quietly = TRUE)) {
         install.packages("BiocManager", dependencies = TRUE)
@@ -19,7 +19,7 @@ install_if_missing <- function(package_name, bioconductor = FALSE) {
     } else {
       install.packages(package_name, dependencies = TRUE)
     }
-    
+
     # Check if installation was successful
     if (require(package_name, character.only = TRUE, quietly = TRUE)) {
       cat(sprintf("✓ Successfully installed %s\n", package_name))
@@ -92,7 +92,7 @@ if (!require("WGCNA", quietly = TRUE)) {
   for (dep in wgcna_deps) {
     install_if_missing(dep)
   }
-  
+
   # Install Bioconductor dependencies for WGCNA
   bioc_deps <- c("impute", "preprocessCore", "GO.db", "AnnotationDbi")
   for (dep in bioc_deps) {
@@ -100,7 +100,7 @@ if (!require("WGCNA", quietly = TRUE)) {
       BiocManager::install(dep, update = FALSE, ask = FALSE)
     }
   }
-  
+
   # Install WGCNA from CRAN
   install.packages("WGCNA", dependencies = TRUE)
 }
@@ -129,4 +129,4 @@ for (pkg in unique(all_packages)) {
 }
 
 cat("\nPackage installation completed!\n")
-cat("If you still encounter issues with specific packages, please install them manually.\n") 
+cat("If you still encounter issues with specific packages, please install them manually.\n")
